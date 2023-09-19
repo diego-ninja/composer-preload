@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Ayesh\ComposerPreload\Composer;
+namespace Ninja\Composer\Preload\Composer;
 
 
-use Ayesh\ComposerPreload\Composer\Command\PreloadCommandProvider;
+use Ninja\Composer\Preload\Composer\Command\PreloadCommandProvider;
 use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capability\CommandProvider;

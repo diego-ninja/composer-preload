@@ -1,9 +1,9 @@
 <?php
 
-namespace Ayesh\ComposerPreload\Tests;
+namespace Ninja\Composer\Preload\Tests;
 
-use Ayesh\ComposerPreload\PreloadFinder;
 use BadMethodCallException;
+use Ninja\Composer\Preload\PreloadFinder;
 use PHPUnit\Framework\TestCase;
 
 class PreloadFinderInvalidValuesTest extends TestCase {

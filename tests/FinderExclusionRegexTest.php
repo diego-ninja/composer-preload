@@ -1,8 +1,8 @@
 <?php
 
-namespace Ayesh\ComposerPreload\Tests;
+namespace Ninja\Composer\Preload\Tests;
 
-use Ayesh\ComposerPreload\PreloadFinder;
+use Ninja\Composer\Preload\PreloadFinder;
 use PHPUnit\Framework\TestCase;
 
 class FinderExclusionRegexTest extends TestCase {
@@ -10,10 +10,7 @@ class FinderExclusionRegexTest extends TestCase {
 	public function testRegex(): void {
 		$class  = $this->getMockupRegexBuilder();
 
-		/**
-		 * @var $finder PreloadFinder
-		 */
-		$finder = new $class();
+        $finder = new $class();
 
 		$this->assertNull($finder->getDirectoryExclusionRegex());
 

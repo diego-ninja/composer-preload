@@ -1,5 +1,5 @@
 {
-    "name": "ayesh/composer-preload",
+    "name": "diego-ninja/composer-preload",
     "description": "Preload your sweet sweet code to opcache with a composer command, making your code faster to run",
     "type": "composer-plugin",
     "license": "MIT",
@@ -7,30 +7,35 @@
         {
             "name": "Ayesh Karunaratne",
             "email": "ayesh@ayesh.me"
+        },
+        {
+            "name": "Diego Rin martín",
+            "email": "yosoy@diego.ninja"
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "composer-plugin-api": "^2.0",
         "ayesh/php-timer": "^2.1.1",
-        "symfony/finder": "^5.0.7"
+        "symfony/finder": "^6"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5.20",
+        "roave/security-advisories": "dev-latest",
+        "phpunit/phpunit": "^10",
         "composer/composer": "^2.0.13"
     },
     "autoload": {
         "psr-4": {
-            "Ayesh\\ComposerPreload\\": "src/"
+            "Ninja\\Composer\\Preload\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ayesh\\ComposerPreload\\Tests\\": "tests/"
+            "Ninja\\Composer\\Preload\\Tests\\": "tests/"
         }
     },
     "extra": {
-        "class": "Ayesh\\ComposerPreload\\Composer\\Plugin"
+        "class": "Ninja\\Composer\\Preload\\Composer\\Plugin"
     },
     "scripts": {
         "test": ["phpunit "]

@@ -1,13 +1,11 @@
 <?php
 
 
-namespace Ayesh\ComposerPreload;
+namespace Ninja\Composer\Preload;
+
 
 class PreloadGenerator {
-    /**
-     * @var PreloadFinder
-     */
-    private $finder;
+    private PreloadFinder $finder;
 
     public function __construct() {
         $this->finder = new PreloadFinder();

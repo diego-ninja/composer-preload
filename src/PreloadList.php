@@ -1,22 +1,20 @@
 <?php
 
-namespace Ayesh\ComposerPreload;
+namespace Ninja\Composer\Preload;
 
 use BadMethodCallException;
 use IteratorAggregate;
+use Traversable;
 
 final class PreloadList implements IteratorAggregate {
 
-    /**
-     * @var IteratorAggregate
-     */
-    private $list;
+    private ?Traversable $list = null;
 
-    public function setList(iterable $list): void {
+    public function setList(Traversable $list): void {
         $this->list = $list;
     }
 
-    public function getIterator(): iterable {
+    public function getIterator(): Traversable {
         if (!$this->list) {
             throw new BadMethodCallException('Attempting to fetch the iterator without setting one first.');
         }

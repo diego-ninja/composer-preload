@@ -1,20 +1,20 @@
 <?php
 
 
-namespace Ayesh\ComposerPreload\Composer\Command;
+namespace Ninja\Composer\Preload\Composer\Command;
 
-use Ayesh\ComposerPreload\PreloadGenerator;
-use Ayesh\ComposerPreload\PreloadList;
-use Ayesh\ComposerPreload\PreloadWriter;
 use Ayesh\PHP_Timer\Formatter;
 use Ayesh\PHP_Timer\Stopwatch;
 use Composer\Command\BaseCommand;
-use Composer\IO\IOInterface;
 use InvalidArgumentException;
+use Ninja\Composer\Preload\PreloadGenerator;
+use Ninja\Composer\Preload\PreloadList;
+use Ninja\Composer\Preload\PreloadWriter;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function gettype;
 use function is_array;
 use function is_bool;
@@ -23,9 +23,10 @@ use function is_string;
 
 class PreloadCommand extends BaseCommand {
 
-    private $config;
+    private array $config;
 
-    protected function configure() {
+    protected function configure(): void
+    {
         $this->setName('preload');
         $this->setDescription('Preloads the source files to PHP OPCache to speed up execution.')
             ->setDefinition(
@@ -84,10 +85,11 @@ HELP
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output): void
+    {
         $timer = new Stopwatch();
-        $composer = $this->getComposer();
-        $extra = $composer->getPackage()->getExtra();
+        $composer = $this->requireComposer(true);
+        $extra = $composer?->getPackage()->getExtra();
 
         if (empty($extra['preload'])) {
             throw new RuntimeException('"preload" setting is not set in "extra" section of the composer.json file.');

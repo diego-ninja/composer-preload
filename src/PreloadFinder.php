@@ -1,34 +1,32 @@
 <?php
 
 
-namespace Ayesh\ComposerPreload;
+namespace Ninja\Composer\Preload;
 
 use BadMethodCallException;
 use InvalidArgumentException;
+use Iterator;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use const PREG_NO_ERROR;
 
 class PreloadFinder {
-    private $include_dirs = [];
-    private $include_files = [];
-    private $exclude_dirs = [];
-    private $exclude_subdirs = [];
-    private $exclude_regex_static;
-    private $files = ['php'];
+    private array $include_dirs = [];
+    private array $include_files = [];
+    private array $exclude_dirs = [];
+    private array $exclude_sub_dirs = [];
+    private ?string $exclude_regex_static = null;
+    private array $files = ['php'];
 
-    /**
-     * @var Finder
-     */
-    private $finder;
+    private Finder $finder;
 
-    private $exclude_regex;
+    private ?string $exclude_regex = null;
 
     public function __construct() {
         $this->finder = new Finder();
     }
 
-    public function getIterator(): iterable {
+    public function getIterator(): Iterator {
         $this->prepareFinder();
         return $this->finder->getIterator();
     }
@@ -46,8 +44,8 @@ class PreloadFinder {
 
         $this->finder->in($this->include_dirs);
 
-        if ($this->exclude_subdirs) {
-            $this->finder->exclude($this->exclude_subdirs);
+        if ($this->exclude_sub_dirs) {
+            $this->finder->exclude($this->exclude_sub_dirs);
         }
 
         $exclude_function = $this->getExcludeCallable();
@@ -70,7 +68,7 @@ class PreloadFinder {
             return null;
         }
 
-        return function (SplFileInfo $file) use ($regex_dir, $regex_static): bool {
+        return static function (SplFileInfo $file) use ($regex_dir, $regex_static): bool {
             $path = str_replace('\\', '/', $file->getPathname());
             $exclude_match = false;
             if ($regex_dir) {
@@ -99,7 +97,7 @@ class PreloadFinder {
         $dirs = [];
         foreach ($this->exclude_dirs as $dir) {
             $dir = str_replace('\\', '/', $dir);
-            if (substr($dir, -1) !== '/') {
+            if (!str_ends_with($dir, '/')) {
                 $dir .= '/'; // Force all directives to be full direcory paths with "/" suffix.
             }
             $dir = preg_quote($dir, '/');
@@ -126,7 +124,7 @@ class PreloadFinder {
     }
 
     public function addExcludeDirPattern(string $dir_name): void {
-        $this->exclude_subdirs[] = $dir_name;
+        $this->exclude_sub_dirs[] = $dir_name;
     }
 
     public function setExcludeRegex(?string $pattern): void {

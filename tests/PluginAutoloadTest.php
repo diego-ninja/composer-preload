@@ -1,10 +1,10 @@
 <?php
 
-namespace Ayesh\ComposerPreload\Tests;
+namespace Ninja\Composer\Preload\Tests;
 
-use Ayesh\ComposerPreload\Composer\Command\PreloadCommand;
-use Ayesh\ComposerPreload\Composer\Command\PreloadCommandProvider;
-use Ayesh\ComposerPreload\Composer\Plugin;
+use Ninja\Composer\Preload\Composer\Command\PreloadCommand;
+use Ninja\Composer\Preload\Composer\Command\PreloadCommandProvider;
+use Ninja\Composer\Preload\Composer\Plugin;
 use PHPUnit\Framework\TestCase;
 
 class PluginAutoloadTest extends TestCase {

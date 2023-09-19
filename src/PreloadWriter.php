@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ayesh\ComposerPreload;
+namespace Ninja\Composer\Preload;
 
 
 use BadMethodCallException;
@@ -9,10 +9,10 @@ use RuntimeException;
 use SplFileInfo;
 
 class PreloadWriter {
-    private $list;
-    private $count;
-    private $status_check = true;
-    private $filename = 'vendor/preload.php';
+    private PreloadList $list;
+    private int $count;
+    private bool $status_check = true;
+    private string $filename = 'vendor/preload.php';
 
     public function __construct(PreloadList $list) {
         $this->list = $list;
