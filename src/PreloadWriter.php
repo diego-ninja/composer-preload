@@ -9,12 +9,14 @@ use RuntimeException;
 use SplFileInfo;
 
 class PreloadWriter {
-    private PreloadList $list;
+
+    public const MECHANISM_REQUIRE = 'require';
+    public const MECHANISM_COMPILE = 'opcache_compile_file';
     private int $count;
     private bool $status_check = true;
     private string $filename = 'vendor/preload.php';
 
-    public function __construct(PreloadList $list) {
+    public function __construct(private PreloadList $list, private string $mechanism) {
         $this->list = $list;
     }
 
@@ -63,6 +65,8 @@ class PreloadWriter {
  * during the next "composer preload" command. 
  */
 
+require_once(\dirname(__DIR__) . '/vendor/autoload.php');
+
 \$_root_directory = \dirname(__DIR__);
 
 HEADER;
@@ -88,6 +92,11 @@ CHECK;
     private function genCacheLine(string $file_path): string {
         $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
         $file_path = addslashes($file_path);
+        if ($this->mechanism === self::MECHANISM_REQUIRE) {
+            return "require_once(\$_root_directory . '/{$file_path}');" . PHP_EOL;
+        }
+
+
         return "\opcache_compile_file(\$_root_directory . '/{$file_path}');" . PHP_EOL;
     }
 

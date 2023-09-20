@@ -15,7 +15,7 @@ class PreloadFinder {
     private array $include_files = [];
     private array $exclude_dirs = [];
     private array $exclude_sub_dirs = [];
-    private ?string $exclude_regex_static = null;
+    private array $exclude_regex_static = [];
     private array $files = ['php'];
 
     private Finder $finder;
@@ -64,7 +64,7 @@ class PreloadFinder {
         $regex_dir = $this->getDirectoryExclusionRegex();
         $regex_static = $this->exclude_regex_static;
 
-        if (!$regex_dir && $this->exclude_regex_static === null) {
+        if (!$regex_dir && $this->exclude_regex_static === []) {
             return null;
         }
 
@@ -77,7 +77,12 @@ class PreloadFinder {
 
             // If excluded due to directory match above , don't run the static regex.
             if (!$exclude_match && $regex_static) {
-                $exclude_match = preg_match($regex_static, $path);
+                foreach ($regex_static as $regex_static_item) {
+                    $exclude_match = preg_match($regex_static_item, $path);
+                    if ($exclude_match) {
+                        break;
+                    }
+                }
             }
 
             return !$exclude_match;
@@ -127,24 +132,26 @@ class PreloadFinder {
         $this->exclude_sub_dirs[] = $dir_name;
     }
 
-    public function setExcludeRegex(?string $pattern): void {
-        if (null !== $pattern) {
+    public function setExcludeRegex(?array $patterns): void {
+        if (null !== $patterns) {
             // A parent error handler might catch the errors.
-            preg_match($pattern, '', $fake_matched);
-            $regex_error = preg_last_error();
-            if ($regex_error !== PREG_NO_ERROR) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        'Preload exclusion regex is invalid: "%s". Error code: %d',
-                        $pattern,
+            foreach ($patterns as $pattern) {
+                preg_match($pattern, '', $fake_matched);
+                $regex_error = preg_last_error();
+                if ($regex_error !== PREG_NO_ERROR) {
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'Preload exclusion regex is invalid: "%s". Error code: %d',
+                            $pattern,
+                            $regex_error
+                        ),
                         $regex_error
-                    ),
-                    $regex_error
-                );
+                    );
+                }
+
+                $this->exclude_regex_static[] = $pattern;
             }
         }
-
-        $this->exclude_regex_static = $pattern;
     }
 
     public function addIncludeExtension(string $extension): void {

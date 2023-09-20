@@ -29,8 +29,8 @@ class PreloadGenerator {
         $this->finder->addExcludePath($path);
     }
 
-    public function setExcludeRegex(?string $pattern): void {
-        $this->finder->setExcludeRegex($pattern);
+    public function setExcludeRegex(array $patterns): void {
+        $this->finder->setExcludeRegex($patterns);
     }
 
     public function addIncludeExtension(string $extension): void {

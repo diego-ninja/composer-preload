@@ -78,14 +78,14 @@ Example configuration for `composer.json`:
  - files: An array of individual files to include.
  - exclude: An array of paths to exclude from the preload file, even if they match "paths" directive.
  - no-status-check: A boolean indicating whether the generated preload file should skip extra checks or not
- - exclude-regex: A regular expression to run on the full file path, and if matched, to be excluded from preload list.
+ - exclude-regex: Aan array of  regular expressions to run on the full file path, and if matched, to be excluded from preload list.
  
 For more: https://github.com/Ayesh/Composer-Preload
 HELP
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $timer = new Stopwatch();
         $composer = $this->requireComposer(true);
@@ -101,7 +101,7 @@ HELP
 
         $this->setConfig($extra['preload'], $input);
         $list = $this->generatePreload();
-        $writer = new PreloadWriter($list);
+        $writer = new PreloadWriter($list, $extra['preload']['mechanism'] ?? PreloadWriter::MECHANISM_REQUIRE);
 
         if ($this->config['no-status-check']) {
             $writer->setStatusCheck(false);
@@ -124,6 +124,8 @@ HELP
             sprintf('<comment>Elapsed time: <info>%s</info>.</comment>', Formatter::formatTime($ms)),
             true
         );
+
+        return 0;
     }
 
     private function setConfig(array $config, InputInterface $input): void {
@@ -207,10 +209,10 @@ HELP
                 $this->config[$item] = $default_value;
             }
 
-            if (isset($this->config[$item]) && !is_string($this->config[$item])) {
+            if (isset($this->config[$item]) && !is_array($this->config[$item])) {
                 throw new InvalidArgumentException(
                     sprintf(
-                        '"%s" must be string value. %s given.',
+                        '"%s" must be an array of strings value. %s given.',
                         'extra.preload.' . $item,
                         gettype($this->config[$item])
                     )
