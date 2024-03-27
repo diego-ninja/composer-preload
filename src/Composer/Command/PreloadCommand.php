@@ -42,7 +42,7 @@ class PreloadCommand extends BaseCommand {
             ->setHelp(
                 <<<HELP
 
-Composer Preload plugin adds this "preload" command, so you can generate a PHP file at 'vendor/preload.php' containing a list of PHP files to load into opcache when called. This can significantly speed up your PHP applications if used correctly. 
+Composer Preload plugin adds this "preload" command, so you can generate a PHP file at 'vendor/preload.php' containing a list of PHP files to load into opcache when called. This can significantly speed up your PHP applications if used correctly.
 
 Use the --no-status-check option to generate the file without additional opcache status checks. This can be useful if you want to include the 'vendor/preload.php' within another script, so these checks redundent. This will override the extra.preload.no-checks directive if used in the composer.json file.
 
@@ -79,7 +79,7 @@ Example configuration for `composer.json`:
  - exclude: An array of paths to exclude from the preload file, even if they match "paths" directive.
  - no-status-check: A boolean indicating whether the generated preload file should skip extra checks or not
  - exclude-regex: Aan array of  regular expressions to run on the full file path, and if matched, to be excluded from preload list.
- 
+
 For more: https://github.com/Ayesh/Composer-Preload
 HELP
             );
@@ -101,7 +101,7 @@ HELP
 
         $this->setConfig($extra['preload'], $input);
         $list = $this->generatePreload();
-        $writer = new PreloadWriter($list, $extra['preload']['mechanism'] ?? PreloadWriter::MECHANISM_REQUIRE);
+        $writer = new PreloadWriter($composer?->getConfig(), $list, $extra['preload']['mechanism'] ?? PreloadWriter::MECHANISM_REQUIRE);
 
         if ($this->config['no-status-check']) {
             $writer->setStatusCheck(false);

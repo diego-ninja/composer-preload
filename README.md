@@ -3,66 +3,66 @@
 
 Preload your code to opcache with a composer command to make your code run faster.
 
-Composer Preload is a Composer plugin that aims to provide and complement PHP opcache warming.  
+Composer Preload is a Composer plugin that aims to provide and complement PHP opcache warming.
 This plugin introduces a new `composer preload` command that can generate a `vendor/preload.php` file (after  `vendor/autoload.php` pattern) that contains calls to warm up the opcache cache.
 
 # How it works
 
-Currently, this plugin recursively scans for `.php` files in the given paths and creates a file that calls   
+Currently, this plugin recursively scans for `.php` files in the given paths and creates a file that calls
 `opcache_compile_file` or `require_once` functions, depending on the mechanism selected in the configuration.
 
 # Installation
 
 You can install this plugin the same way you'd install a normal composer package:
-```  
-composer require diego-ninja/composer-preload  
-```  
+```
+composer require contagt/composer-preload
+```
 
 If you would rather install this globally:
-```  
-composer g require diego-ninja/composer-preload  
-```  
+```
+composer g require contagt/composer-preload
+```
 
 # Configuration
 
-1: Edit your `composer.json` file and create a section called `extra`  if it doesn't already exist. Here is an   
+1: Edit your `composer.json` file and create a section called `extra`  if it doesn't already exist. Here is an
 example:
 
-```  
-{  
-    "extra": {  
-        "preload": {  
-            "paths": [  
+```
+{
+    "extra": {
+        "preload": {
+            "paths": [
                 "app",
                 "bootstrap",
                 "config"
-                "vendor"  
-            ],  
-            "exclude": [  
-                "app/core/tests",  
-                "app/core/lib/Drupal/Component/Assertion",  
-                "app/core/modules/simpletest",  
-                "app/core/modules/editor/src/Tests"  
-            ],  
-            "extensions": ["php", "module", "inc", "install"],  
+                "vendor"
+            ],
+            "exclude": [
+                "app/core/tests",
+                "app/core/lib/Drupal/Component/Assertion",
+                "app/core/modules/simpletest",
+                "app/core/modules/editor/src/Tests"
+            ],
+            "extensions": ["php", "module", "inc", "install"],
             "exclude-regex": [
 	            "/[A-Za-z0-9_]test\\.php$/i",
-			],  
+			],
             "no-status-check": false,
-            "mechanism": "compile",  
-            "files": [  
-                "somefile.php"  
-            ]  
-        }  
-    }  
-}  
-```  
+            "mechanism": "compile",
+            "files": [
+                "somefile.php"
+            ]
+        }
+    }
+}
+```
 
 The `extra.preload` directive contains all the configuration options for this plugin. The `paths` directive must be an array of directories relative to the `composer.json` file. These directories will be scanned recursively for `.php` files, converted to absolute paths, and appended to the `vendor/preload.php` file.
 
 2: Run the `composer preload` command.
 
-3: Execute the generated `vendor/preload.php` file. You can either run `php vendor/preload.php` or use your web server   
+3: Execute the generated `vendor/preload.php` file. You can either run `php vendor/preload.php` or use your web server
 to execute it. See the Preloading section below for more information.
 
 
@@ -78,7 +78,7 @@ An array of directory paths to exclude from the `preload.php`. This list must be
 
 ### `extra.preload.extensions` : _Optional_, Default: `["php"]`
 
-An array of file extensions to search for. If not entered, it will search for all `.php` files.  
+An array of file extensions to search for. If not entered, it will search for all `.php` files.
 Do not enter the proceeding period (`.`) character. The example above is suitable for Drupal. For Symfony/Laravel projects,  you can leave the default option `["php"]` or just not use this option so it defaults to just `.php`.
 
 ### `extra.preload.exclude-regex` : _Optional_
@@ -89,7 +89,7 @@ For example, to exclude all PHPUnit-akin tests, you can use the regular expressi
 
 ```regex
 /[A-Za-z0-9_]test\\.php$/i
-```  
+```
 
 This will make sure the file name ends with "test.php", but also has an alphanumeric or underscore prefix. This is a common pattern of PHPUnit tests. The `/i` modifier makes the match case insensitive.
 
@@ -128,7 +128,7 @@ Once the script is generated, **you're encouraged to restart your PHP process**
 
 ### What does this plugin even do?
 
-This plugin can create a new file at `vendor/preload.php` that follows the pattern of Composer's autoloader at   
+This plugin can create a new file at `vendor/preload.php` that follows the pattern of Composer's autoloader at
 `vendor/autoload.php`.
 
 This new `preload.php` file contains several function calls that compiles PHP files and cache  them into PHP's opcache. PHP Opcache is a shared memory (with optional file storage option) feature in PHP that can  hold compiled PHP files, so the same file doesn't need to be compiled again and again when its called.
@@ -138,7 +138,7 @@ This is a persistent memory until PHP is restarted or the cache is eventually fl
 Caching files in opcache has siginificant performance benefits for the cost of memory.
 ### So all the files are loaded all the time?
 
-All the files are loaded into _Opcache_. This is **not** same as you `include()` or `require()` a class, which makes  
+All the files are loaded into _Opcache_. This is **not** same as you `include()` or `require()` a class, which makes
 PHP actually execute the code. When you cache code to Opcache, those classes are not executed - just their compiled code  is cached to the memory.
 
 For example, if you declare a variable, this plugin's preload functionality will not make the variables available inside  your PHP code. You still have to include the file to make them available.
