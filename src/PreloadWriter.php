@@ -15,17 +15,17 @@ class PreloadWriter {
     public const MECHANISM_COMPILE = 'opcache_compile_file';
     private int $count;
     private bool $status_check = true;
-    private string $filename = "vendor/preload.php";
-    private Config $composerConfig;
+    private string $filename = 'vendor/preload.php';
 
     public function __construct(private Config $composerConfig, private PreloadList $list, private string $mechanism) {
         $this->list = $list;
         $this->composerConfig = $composerConfig;
-        $this->$filename = $composerConfig->get('vendor_dir') . DIRECTORY_SEPARATOR . 'vendor/preload.php';
+        $this->filename = $composerConfig->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR . 'preload.php';
     }
 
     public function setPath(string $path): void {
-        $this->filename = $composerConfig->get('vendor_dir') . DIRECTORY_SEPARATOR . $path;
+        error_log(__DIR__);
+        $this->filename = $this->composerConfig->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR . $path;
     }
 
     public function getPath(): string {
@@ -71,8 +71,6 @@ class PreloadWriter {
 
 require_once(\dirname(__DIR__) . '/vendor/autoload.php');
 
-\$_root_directory = \dirname(__DIR__);
-
 HEADER;
     }
 
@@ -97,11 +95,11 @@ CHECK;
         $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
         $file_path = addslashes($file_path);
         if ($this->mechanism === self::MECHANISM_REQUIRE) {
-            return "require_once(\$_root_directory . '/{$file_path}');" . PHP_EOL;
+            return "require_once('{$file_path}');" . PHP_EOL;
         }
 
 
-        return "\opcache_compile_file(\$_root_directory . '/{$file_path}');" . PHP_EOL;
+        return "\opcache_compile_file('{$file_path}');" . PHP_EOL;
     }
 
     public function getCount(): int {

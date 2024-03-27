@@ -3,25 +3,27 @@
 
 namespace Ninja\Composer\Preload\Composer\Command;
 
+use Composer\Config;
+use function gettype;
+use function is_bool;
+use RuntimeException;
+use function is_array;
+use function is_string;
+use function is_iterable;
+use InvalidArgumentException;
 use Ayesh\PHP_Timer\Formatter;
 use Ayesh\PHP_Timer\Stopwatch;
 use Composer\Command\BaseCommand;
-use InvalidArgumentException;
-use Ninja\Composer\Preload\PreloadGenerator;
 use Ninja\Composer\Preload\PreloadList;
+
 use Ninja\Composer\Preload\PreloadWriter;
-use RuntimeException;
-use Symfony\Component\Console\Input\InputInterface;
+use Ninja\Composer\Preload\PreloadGenerator;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function gettype;
-use function is_array;
-use function is_bool;
-use function is_iterable;
-use function is_string;
-
-class PreloadCommand extends BaseCommand {
+class PreloadCommand extends BaseCommand
+{
 
     private array $config;
 
@@ -128,7 +130,8 @@ HELP
         return 0;
     }
 
-    private function setConfig(array $config, InputInterface $input): void {
+    private function setConfig(array $config, InputInterface $input): void
+    {
         $this->config = $config;
 
         if ($input->getOption('no-status-check')) {
@@ -136,21 +139,22 @@ HELP
         }
     }
 
-    private function generatePreload(): PreloadList {
+    private function generatePreload(): PreloadList
+    {
         $generator = new PreloadGenerator();
 
         $this->validateConfiguration();
 
         foreach ($this->config['files'] as $file) {
-            $generator->addFile($file);
+            $generator->addFile($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR . $file);
         }
 
         foreach ($this->config['paths'] as $path) {
-            $generator->addPath($path);
+            $generator->addPath($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR  . $path);
         }
 
         foreach ($this->config['exclude'] as $path) {
-            $generator->addExcludePath($path);
+            $generator->addExcludePath($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR  . $path);
         }
 
         $generator->setExcludeRegex($this->config['exclude-regex']);
@@ -162,7 +166,8 @@ HELP
         return $generator->getList();
     }
 
-    private function validateConfiguration(): void {
+    private function validateConfiguration(): void
+    {
         $force_str_array = ['paths', 'exclude', 'extensions', 'files'];
         foreach ($force_str_array as $item) {
             if (!isset($this->config[$item])) {
