@@ -146,15 +146,15 @@ HELP
         $this->validateConfiguration();
 
         foreach ($this->config['files'] as $file) {
-            $generator->addFile($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR . $file);
+            $generator->addFile($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR . $file);
         }
 
         foreach ($this->config['paths'] as $path) {
-            $generator->addPath($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR  . $path);
+            $generator->addPath($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR  . $path);
         }
 
         foreach ($this->config['exclude'] as $path) {
-            $generator->addExcludePath($this->requireComposer(true)?->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR  . $path);
+            $generator->addExcludePath($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR  . $path);
         }
 
         $generator->setExcludeRegex($this->config['exclude-regex']);

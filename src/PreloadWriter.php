@@ -24,8 +24,7 @@ class PreloadWriter {
     }
 
     public function setPath(string $path): void {
-        error_log(__DIR__);
-        $this->filename = $this->composerConfig->get('vendor-dir', Config::RELATIVE_PATHS) . DIRECTORY_SEPARATOR . $path;
+        $this->filename = $path;
     }
 
     public function getPath(): string {
