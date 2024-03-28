@@ -2,7 +2,7 @@
     "name": "contagt/composer-preload",
     "description": "Preload your sweet sweet code to opcache with a composer command, making your code faster to run",
     "type": "composer-plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "authors": [
         {

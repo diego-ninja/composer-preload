@@ -142,7 +142,6 @@ HELP
     private function generatePreload(): PreloadList
     {
         $generator = new PreloadGenerator();
-
         $this->validateConfiguration();
 
         foreach ($this->config['files'] as $file) {
