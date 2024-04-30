@@ -3,25 +3,27 @@
 
 namespace Ninja\Composer\Preload\Composer\Command;
 
+use Composer\Config;
+use function gettype;
+use function is_bool;
+use RuntimeException;
+use function is_array;
+use function is_string;
+use function is_iterable;
+use InvalidArgumentException;
 use Ayesh\PHP_Timer\Formatter;
 use Ayesh\PHP_Timer\Stopwatch;
 use Composer\Command\BaseCommand;
-use InvalidArgumentException;
-use Ninja\Composer\Preload\PreloadGenerator;
 use Ninja\Composer\Preload\PreloadList;
+
 use Ninja\Composer\Preload\PreloadWriter;
-use RuntimeException;
-use Symfony\Component\Console\Input\InputInterface;
+use Ninja\Composer\Preload\PreloadGenerator;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function gettype;
-use function is_array;
-use function is_bool;
-use function is_iterable;
-use function is_string;
-
-class PreloadCommand extends BaseCommand {
+class PreloadCommand extends BaseCommand
+{
 
     private array $config;
 
@@ -42,7 +44,7 @@ class PreloadCommand extends BaseCommand {
             ->setHelp(
                 <<<HELP
 
-Composer Preload plugin adds this "preload" command, so you can generate a PHP file at 'vendor/preload.php' containing a list of PHP files to load into opcache when called. This can significantly speed up your PHP applications if used correctly. 
+Composer Preload plugin adds this "preload" command, so you can generate a PHP file at 'vendor/preload.php' containing a list of PHP files to load into opcache when called. This can significantly speed up your PHP applications if used correctly.
 
 Use the --no-status-check option to generate the file without additional opcache status checks. This can be useful if you want to include the 'vendor/preload.php' within another script, so these checks redundent. This will override the extra.preload.no-checks directive if used in the composer.json file.
 
@@ -79,7 +81,7 @@ Example configuration for `composer.json`:
  - exclude: An array of paths to exclude from the preload file, even if they match "paths" directive.
  - no-status-check: A boolean indicating whether the generated preload file should skip extra checks or not
  - exclude-regex: Aan array of  regular expressions to run on the full file path, and if matched, to be excluded from preload list.
- 
+
 For more: https://github.com/Ayesh/Composer-Preload
 HELP
             );
@@ -101,7 +103,7 @@ HELP
 
         $this->setConfig($extra['preload'], $input);
         $list = $this->generatePreload();
-        $writer = new PreloadWriter($list, $extra['preload']['mechanism'] ?? PreloadWriter::MECHANISM_REQUIRE);
+        $writer = new PreloadWriter($composer?->getConfig(), $list, $extra['preload']['mechanism'] ?? PreloadWriter::MECHANISM_REQUIRE);
 
         if ($this->config['no-status-check']) {
             $writer->setStatusCheck(false);
@@ -128,7 +130,8 @@ HELP
         return 0;
     }
 
-    private function setConfig(array $config, InputInterface $input): void {
+    private function setConfig(array $config, InputInterface $input): void
+    {
         $this->config = $config;
 
         if ($input->getOption('no-status-check')) {
@@ -136,21 +139,21 @@ HELP
         }
     }
 
-    private function generatePreload(): PreloadList {
+    private function generatePreload(): PreloadList
+    {
         $generator = new PreloadGenerator();
-
         $this->validateConfiguration();
 
         foreach ($this->config['files'] as $file) {
-            $generator->addFile($file);
+            $generator->addFile($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR . $file);
         }
 
         foreach ($this->config['paths'] as $path) {
-            $generator->addPath($path);
+            $generator->addPath($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR  . $path);
         }
 
         foreach ($this->config['exclude'] as $path) {
-            $generator->addExcludePath($path);
+            $generator->addExcludePath($this->requireComposer(true)?->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR  . $path);
         }
 
         $generator->setExcludeRegex($this->config['exclude-regex']);
@@ -162,7 +165,8 @@ HELP
         return $generator->getList();
     }
 
-    private function validateConfiguration(): void {
+    private function validateConfiguration(): void
+    {
         $force_str_array = ['paths', 'exclude', 'extensions', 'files'];
         foreach ($force_str_array as $item) {
             if (!isset($this->config[$item])) {
