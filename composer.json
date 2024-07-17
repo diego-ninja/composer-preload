@@ -1,5 +1,5 @@
 {
-    "name": "diego-ninja/composer-preload",
+    "name": "anton-shelekhvost/composer-preload",
     "description": "Preload your sweet sweet code to opcache with a composer command, making your code faster to run",
     "type": "composer-plugin",
     "license": "MIT",
