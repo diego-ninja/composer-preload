@@ -14,10 +14,10 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": ">=8.2",
         "composer-plugin-api": "^2.0",
         "ayesh/php-timer": "^2.1.1",
-        "symfony/finder": "^6"
+        "symfony/finder": "^7"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
